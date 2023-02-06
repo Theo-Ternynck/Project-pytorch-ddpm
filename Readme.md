@@ -1,3 +1,9 @@
+# DL-DIY potential project ideas
+
+- read the paper and understand the approach
+- attention, to reproduce the results, you will need acces to good GPUs...
+- try the approach on CelebA
+
 # Denoising Diffusion Probabilistic Models
 
 Unofficial PyTorch implementation of Denoising Diffusion Probabilistic Models [1].
