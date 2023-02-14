@@ -1,8 +1,11 @@
 .vscode
 
-stats
 data
-logs
+sandbox.py
+
+.logs/DDPM_CIFAR10_EPS/sample
+
+.logs/DDPM_CIFAR10_EPS/ckpt.pt
 
 .python-version
 __pycache__
