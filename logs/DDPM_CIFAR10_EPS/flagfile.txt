@@ -1,6 +1,6 @@
 --T=1000
 --attn=1
---batch_size=1
+--batch_size=128
 --beta_1=0.0001
 --beta_T=0.02
 --ch=128
@@ -19,7 +19,7 @@
 --logdir=./logs/DDPM_CIFAR10_EPS
 --lr=0.0002
 --mean_type=epsilon
---num_images=1
+--num_images=256
 --num_res_blocks=2
 --num_workers=4
 --noparallel

@@ -16,6 +16,7 @@ from model import UNet
 from score.both import get_inception_and_fid_score
 
 FLAGS = flags.FLAGS
+flags.DEFINE_bool("ema", False, help="inferance with EMA also")
 flags.DEFINE_bool("train", False, help="train from scratch")
 flags.DEFINE_bool("eval", False, help="load ckpt.pt and evaluate FID and IS")
 # UNet
@@ -64,6 +65,7 @@ flags.DEFINE_bool("fid_use_torch", False, help="calculate IS and FID on gpu")
 flags.DEFINE_string("fid_cache", "./stats/cifar10.train.npz", help="FID cache")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 
 
 def ema(source, target, decay):
@@ -250,7 +252,7 @@ def train():
     writer.close()
 
 
-def eval():
+def eval(ema=True):
     # model setup
     model = UNet(
         T=FLAGS.T,
@@ -280,17 +282,18 @@ def eval():
     save_image(
         torch.tensor(samples[: min(256, FLAGS.num_images)]),
         os.path.join(FLAGS.logdir, "samples.png"),
-        nrow=1,
+        nrow=16,
     )
 
-    model.load_state_dict(ckpt["ema_model"])
-    (IS, IS_std), FID, samples = evaluate(sampler, model)
-    print("Model(EMA): IS:%6.3f(%.3f), FID:%7.3f" % (IS, IS_std, FID))
-    save_image(
-        torch.tensor(samples[: min(256, FLAGS.num_images)]),
-        os.path.join(FLAGS.logdir, "samples_ema.png"),
-        nrow=1,
-    )
+    if ema:
+        model.load_state_dict(ckpt["ema_model"])
+        (IS, IS_std), FID, samples = evaluate(sampler, model)
+        print("Model(EMA): IS:%6.3f(%.3f), FID:%7.3f" % (IS, IS_std, FID))
+        save_image(
+            torch.tensor(samples[: min(256, FLAGS.num_images)]),
+            os.path.join(FLAGS.logdir, "samples_ema.png"),
+            nrow=16,
+        )
 
 
 def main(argv):
@@ -299,7 +302,7 @@ def main(argv):
     if FLAGS.train:
         train()
     if FLAGS.eval:
-        eval()
+        eval(FLAGS.ema)
     if not FLAGS.train and not FLAGS.eval:
         print("Add --train and/or --eval to execute corresponding tasks")
 

@@ -1,15 +1,14 @@
 import numpy as np
 import torch
 from scipy import linalg
-from tqdm import tqdm
 from torch.nn.functional import adaptive_avg_pool2d
+from tqdm import tqdm
 
 from .inception import InceptionV3
 
-
 DIM = 2048
-device = torch.device('cuda:0')
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def torch_cov(m, rowvar=False):
     '''Estimate a covariance matrix given data.
