@@ -65,7 +65,7 @@ flags.DEFINE_bool("fid_use_torch", False, help="calculate IS and FID on gpu")
 flags.DEFINE_string("fid_cache", "./stats/cifar10.train.npz", help="FID cache")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
+print(f"Device used: {device}")
 
 
 def ema(source, target, decay):
@@ -99,6 +99,7 @@ def evaluate(sampler, model):
             images.append((batch_images + 1) / 2)
         images = torch.cat(images, dim=0).numpy()
     model.train()
+
     (IS, IS_std), FID = get_inception_and_fid_score(
         images,
         FLAGS.fid_cache,
