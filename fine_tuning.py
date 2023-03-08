@@ -124,10 +124,12 @@ def fine_tune(model, data_dir):
                     x_0 = net_sampler(x_T)
                     grid = (make_grid(x_0) + 1) / 2
                     path = os.path.join(
-                        FLAGS.logdir, "sample", "%d.png" % (step + prev_step)
+                        FLAGS.logdir,
+                        "/sample_fine_tune/",
+                        "%d.png" % (step + prev_step),
                     )
                     save_image(grid, path)
-                    writer.add_image("sample", grid, step)
+                    writer.add_image("sample_fine_tune", grid, step)
                 model.train()
 
             # save
@@ -169,7 +171,7 @@ def generate_sample(sampler, model):
 
 
 def main(argv):
-    # suppress annoying inception_v3 initialization warning
+    # suppress a  nnoying inception_v3 initialization warning
 
     model = UNet(
         T=FLAGS.T,
