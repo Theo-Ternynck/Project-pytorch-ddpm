@@ -21,6 +21,13 @@ flags.DEFINE_bool(
     False,
     help="restart fine tuning from a certain state (optim, scheduler,model)",
 )
+
+flags.DEFINE_bool(
+    "generation",
+    True,
+    help="wether or not to generate a batch of 256 new images after the training",
+)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -124,10 +131,10 @@ def fine_tune(model, data_dir):
                     x_0 = net_sampler(x_T)
                     grid = (make_grid(x_0) + 1) / 2
                     path = os.path.join(
-                        FLAGS.logdir,
-                        "/sample_fine_tune/",
+                        FLAGS.logdir + "/sample_fine_tune",
                         "%d.png" % (step + prev_step),
                     )
+                    print(path)
                     save_image(grid, path)
                     writer.add_image("sample_fine_tune", grid, step)
                 model.train()
@@ -145,12 +152,13 @@ def fine_tune(model, data_dir):
                 }
                 torch.save(ckpt, os.path.join(FLAGS.logdir, "ckpt_fine_tune.pt"))
 
-        images = generate_sample(net_sampler, model)
-        save_image(
-            torch.tensor(images[: min(256, FLAGS.num_images)]),
-            os.path.join(FLAGS.logdir, "sample_fine_tune.png"),
-            nrow=16,
-        )
+        if FLAGS.generation:
+            images = generate_sample(net_sampler, model)
+            save_image(
+                torch.tensor(images[: min(256, FLAGS.num_images)]),
+                os.path.join(FLAGS.logdir, "sample_fine_tune.png"),
+                nrow=16,
+            )
 
     writer.close()
 
